@@ -1,0 +1,22 @@
+{
+  "auth" : "cpan:FCO",
+  "authors" : [
+    "Fernando Correa de Oliveira"
+  ],
+  "build-depends" : [ ],
+  "depends" : [
+    "Grammar::Tracer"
+  ],
+  "description" : "WiP NJK with types",
+  "license" : "Artistic-2.0",
+  "name" : "TypedNJK",
+  "perl" : "6.d",
+  "provides" : {
+    "TypedNJK" : "lib/TypedNJK.rakumod"
+  },
+  "resources" : [ ],
+  "source-url" : "",
+  "tags" : [ ],
+  "test-depends" : [ ],
+  "version" : "0.0.1"
+}

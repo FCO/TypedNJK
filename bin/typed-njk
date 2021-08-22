@@ -1,0 +1,8 @@
+#!/usr/bin/env raku
+use TypedNJK;
+
+my TypedNJK $compiler .= new;
+
+multi MAIN(:e(:$eval)) {
+    say $compiler.parse: $eval
+}

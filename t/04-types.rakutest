@@ -1,0 +1,41 @@
+use Test;
+use TypedNJK::Grammar;
+use TypedNJK::Grammar::Type;
+
+my \any    = TypedNJK::Grammar.string-to-type: "any";
+my \number = TypedNJK::Grammar.string-to-type: "number";
+my \string = TypedNJK::Grammar.string-to-type: "string";
+my \array  = TypedNJK::Grammar.string-to-type: "array";
+my \tarray = TypedNJK::Grammar.string-to-type: "array[number]";
+my \obj    = TypedNJK::Grammar.string-to-type: "object";
+my \tobj   = TypedNJK::Grammar.string-to-type: "object[number]";
+
+ok TypedNJK::Grammar.test-type: any   , any;
+ok TypedNJK::Grammar.test-type: number, number;
+ok TypedNJK::Grammar.test-type: string, string;
+
+ok TypedNJK::Grammar.test-type: any, number;
+ok TypedNJK::Grammar.test-type: any, string;
+
+nok TypedNJK::Grammar.test-type: number, any;
+nok TypedNJK::Grammar.test-type: string, any;
+
+ok TypedNJK::Grammar.test-type: array, array;
+ok TypedNJK::Grammar.test-type: any  , array;
+
+ok TypedNJK::Grammar.test-type: tarray, tarray;
+ok TypedNJK::Grammar.test-type: any   , tarray;
+
+ok  TypedNJK::Grammar.test-type: array , tarray;
+nok TypedNJK::Grammar.test-type: tarray, array;
+
+ok TypedNJK::Grammar.test-type: obj, obj;
+ok TypedNJK::Grammar.test-type: any  , obj;
+
+ok TypedNJK::Grammar.test-type: tobj, tobj;
+ok TypedNJK::Grammar.test-type: any   , tobj;
+
+ok  TypedNJK::Grammar.test-type: obj , tobj;
+nok TypedNJK::Grammar.test-type: tobj, obj;
+
+done-testing

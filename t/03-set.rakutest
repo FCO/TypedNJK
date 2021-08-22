@@ -1,0 +1,28 @@
+use Test;
+use TypedNJK::Grammar;
+use lib <t>;
+use helpers;
+
+my $*THROW-INSTEAD-OF-EXIT = True;
+
+test-parsed q[{% set bla %}ble{% endset %}{{ bla }}];
+test-parsed q[{% set bla : number %}ble{% endset %}{{ bla }}];
+
+test-parsed q[{% set bla = 1 %}{{ bla }}];
+test-parsed q[{% set bla : number = 1 %}{{ bla }}];
+test-parsed q[{% set bla : number = 1 + 2 %}{{ bla }}];
+
+throws-like {
+    test-parsed q[{% set bla : string = ble %}],
+    :stack[ %( ble => TypedNJK::Grammar.string-to-type("number") ), ]
+}, Exception, message => /bla/;
+
+throws-like {
+    test-parsed q!{% set bla : number|array[number] = "string" %}!,
+}, Exception, message => /"Wants type '" .*? number|array\[number\] .* "' but received '" .* string .* "'"/;
+
+throws-like {
+    test-parsed q!{% set bla : number|array[number] = 42 %}{% set ble : string|object[string] = bla %}!,
+}, Exception, message => /"Wants type '" .*? string|object\[string\] .* "' but received '" .* number .* "'"/;
+
+done-testing

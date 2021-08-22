@@ -1,0 +1,127 @@
+use Test;
+use TypedNJK::Grammar;
+use lib <t>;
+use helpers;
+
+my $*THROW-INSTEAD-OF-EXIT = True;
+
+#test-parsed "", *.&test-key: "tmpl", :!has;
+test-parsed "bla",                      :also[ <tmpl 0 text>,  <tmpl> => 1 ];
+test-parsed "   bla ble bli blo blu   ",:also[ <tmpl 0 text>,  <tmpl> => 1 ];
+test-parsed '{{ 1 }}',                  :also[ <tmpl 0 value>, <tmpl> => 1 ];
+test-parsed 'bla{{ 1 }}', :also[
+    < tmpl 0 text  > => "bla",
+    < tmpl 1 value > => '{{ 1 }}',
+    < tmpl         > => 2,
+];
+test-parsed '{{ 1 }}bla', :also[
+    < tmpl 0 value > => '{{ 1 }}',
+    < tmpl 1 text  > => 'bla',
+    < tmpl         > => 2,
+];
+test-parsed 'bla{{ 1 }}ble', :also[
+    < tmpl 0 text  > => 'bla',
+    < tmpl 1 value > => '{{ 1 }}',
+    < tmpl 2 text  > => 'ble',
+    < tmpl         > => 3,
+];
+test-parsed '{{ 1 }}bla{{ 2 }}', :also[
+    <tmpl 0 value > => '{{ 1 }}',
+    <tmpl 1 text  > => 'bla',
+    <tmpl 2 value > => '{{ 2 }}',
+    <tmpl         > => 3,
+];
+test-parsed '{{ -1 }}', :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "-1", <tmpl> => 1 ];
+test-parsed '{{ "bla" }}', :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => '"bla"', <tmpl> => 1 ];
+test-parsed q[{{ 'bla' }}], :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "'bla'", <tmpl> => 1 ];
+test-parsed q[{{ undefined }}], :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "undefined", <tmpl> => 1 ];
+test-parsed q[{{ null }}], :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "null", <tmpl> => 1 ];
+
+test-parsed
+    q[{{ bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "bla", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("any") ), ],
+;
+
+throws-like {
+    test-parsed
+    q[{{ ble }}],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("any") ), ]
+}, Exception, message => /ble <?before .*? ':'>/;
+
+throws-like {
+    test-parsed
+        q[{{ ble }}{{ bli }}],
+        :stack[
+            %( bla => TypedNJK::Grammar.string-to-type("any"), a => TypedNJK::Grammar.string-to-type("any") ),
+            %( ble => TypedNJK::Grammar.string-to-type("any"), b => TypedNJK::Grammar.string-to-type("any") )
+        ]
+}, Exception, message => /bli <?before .*? ':'>/;
+
+test-parsed
+    q[{{ 1 + 2 }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 + 2 ", <tmpl> => 1 ],
+;
+
+test-parsed
+    q[{{ 1 + bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 + bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ]
+;
+
+test-parsed
+    q[{{ 1 - 2 }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 - 2 ", <tmpl> => 1 ],
+;
+
+test-parsed
+    q[{{ 1 - bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 - bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ]
+;
+
+test-parsed
+    q[{{ 1 * 2 }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 * 2 ", <tmpl> => 1 ],
+;
+
+test-parsed
+    q[{{ 1 * bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 * bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ]
+;
+
+test-parsed
+    q[{{ 1 / 2 }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 / 2 ", <tmpl> => 1 ],
+;
+
+test-parsed
+    q[{{ 1 / bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 / bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ]
+;
+
+# TODO: Test tree
+test-parsed
+    q[{{ 1 + 2 - 3 * 4 / bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 + 2 - 3 * 4 / bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ],
+;
+
+# TODO: Test tree
+test-parsed
+    q[{{ 1 / 2 * 3 - 4 + bla }}],
+    :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 / 2 * 3 - 4 + bla ", <tmpl> => 1 ],
+    :stack[ %( bla => TypedNJK::Grammar.string-to-type("number") ), ],
+;
+
+throws-like {
+    test-parsed
+        q[{{ 1 + bla }}],
+        :also[ <tmpl 0 value>, <tmpl 0 value 0 code> => "1 + bla ", <tmpl> => 1 ],
+        :stack[ %( bla => TypedNJK::Grammar.string-to-type("string") ), ]
+    ;
+}, Exception, message => /number <?before .*? 'string'>/;
+
+done-testing

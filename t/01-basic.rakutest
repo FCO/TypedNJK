@@ -1,0 +1,6 @@
+use Test;
+use TypedNJK;
+
+pass "replace me";
+
+done-testing;
