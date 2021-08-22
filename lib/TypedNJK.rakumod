@@ -4,6 +4,12 @@ unit class TypedNJK:ver<0.0.1>:auth<cpan:FCO>;
 has TypedNJK::Grammar $.grammar .= new;
 
 method parse(Str $code) {
+    CATCH {
+        default {
+            note .message;
+            exit
+        }
+    }
     $!grammar.parse: $code
 }
 

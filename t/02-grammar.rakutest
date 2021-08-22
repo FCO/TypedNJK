@@ -3,8 +3,6 @@ use TypedNJK::Grammar;
 use lib <t>;
 use helpers;
 
-my $*THROW-INSTEAD-OF-EXIT = True;
-
 #test-parsed "", *.&test-key: "tmpl", :!has;
 test-parsed "bla",                      :also[ <tmpl 0 text>,  <tmpl> => 1 ];
 test-parsed "   bla ble bli blo blu   ",:also[ <tmpl 0 text>,  <tmpl> => 1 ];

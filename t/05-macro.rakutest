@@ -2,7 +2,6 @@ use Test;
 use TypedNJK::Grammar;
 use lib <t>;
 use helpers;
-my $*THROW-INSTEAD-OF-EXIT = True;
 
 test-parsed '{% macro bla() %}{% endmacro %}{% call bla() %}{% endcall %}', :also[ <tmpl> => 2 ];
 todo 1;

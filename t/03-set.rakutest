@@ -3,8 +3,6 @@ use TypedNJK::Grammar;
 use lib <t>;
 use helpers;
 
-my $*THROW-INSTEAD-OF-EXIT = True;
-
 test-parsed q[{% set bla %}ble{% endset %}{{ bla }}];
 test-parsed q[{% set bla : number %}ble{% endset %}{{ bla }}];
 

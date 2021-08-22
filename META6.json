@@ -12,10 +12,14 @@
   "name" : "TypedNJK",
   "perl" : "6.d",
   "provides" : {
-    "TypedNJK" : "lib/TypedNJK.rakumod"
+    "TypedNJK" : "lib/TypedNJK.rakumod",
+    "TypedNJK::Grammar" : "lib/TypedNJK/Grammar.rakumod",
+    "TypedNJK::Grammar::Macro" : "lib/TypedNJK/Grammar/Macro.rakumod",
+    "TypedNJK::Grammar::Set" : "lib/TypedNJK/Grammar/Set.rakumod",
+    "TypedNJK::Grammar::Type" : "lib/TypedNJK/Grammar/Type.rakumod"
   },
   "resources" : [ ],
-  "source-url" : "",
+  "source-url" : "https://github.com/FCO/TypedNJK.git",
   "tags" : [ ],
   "test-depends" : [ ],
   "version" : "0.0.1"

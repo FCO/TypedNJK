@@ -102,14 +102,7 @@ method error($msg) is hidden-from-backtrace {
         $msg
     }
 
-    if $*THROW-INSTEAD-OF-EXIT {
-        die join "\n", [ $header, $line, $message ];
-    }
-
-    note $header;
-    note $line;
-    note $message;
-    exit 1;
+    die join "\n", [ $header, $line, $message ];
 }
 
 rule TOP { <tmpl>* }
